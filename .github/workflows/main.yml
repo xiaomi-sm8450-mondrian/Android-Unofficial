@@ -1,13 +1,16 @@
 name: Deploy VueJS Project
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:  # Cho phép bạn chạy thủ công từ UI
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    permissions:         # <-- Đặt đúng cấp job
+      pages: write
+      id-token: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -19,12 +22,9 @@ jobs:
         run: npm install
 
       - name: Build App
-        run: npm run build -- --base=/Android-Unofficial/
+        run: npm run build -- --base=/5mins-deploy-vue/
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         with:
           publish_dir: ./dist
-        permissions:
-          pages: write
-          id-token: write
