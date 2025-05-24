@@ -1,43 +1,30 @@
 name: Deploy VueJS Project
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - master
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '16'
+
       - name: Install Dependencies
         run: npm install
+
       - name: Build App
-        run: npm run build -- --base=/
-      - name:
-        run: |
-          git config --local user.name "dopaemon"
-          git config --local user.email "polarisdp@gmail.com"
-          git add -vAf
-          git commit -sm "build: Upload Dist"
-      - name: Commit & Push changes
-        uses: actions-js/push@master
+        run: npm run build -- --base=/Android-Unofficial/
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Archive artifact
-        shell: sh
-        run: |
-          tar \
-            --dereference --hard-dereference \
-            --directory "dist" \
-            -cvf "$RUNNER_TEMP/artifact.tar" \
-            --exclude=.git \
-            --exclude=.github \
-            .
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: ${{ runner.temp }}/artifact.tar
-          if-no-files-found: error
+          publish_dir: ./dist
+        permissions:
+          pages: write
+          id-token: write
