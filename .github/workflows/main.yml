@@ -14,7 +14,17 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Build App
-        run: npm run build -- --base=/Android-Unofficial/
+        run: npm run build -- --base=/
+      - name:
+        run: |
+          git config --local user.name "dopaemon"
+          git config --local user.email "polarisdp@gmail.com"
+          git add -vAf
+          git commit -sm "build: Upload Dist"
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive artifact
         shell: sh
         run: |
@@ -31,23 +41,3 @@ jobs:
           name: github-pages
           path: ${{ runner.temp }}/artifact.tar
           if-no-files-found: error
-
-  deploy:
-    # Chờ "build" xong mới chạy "deploy"
-    needs: build
-
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
