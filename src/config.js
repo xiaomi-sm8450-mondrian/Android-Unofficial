@@ -3,28 +3,20 @@ export default {
     ACCENT_COLOR: "#0366d6",
     SUPPORTED_DEVICES: [
         {
-            name: "Pixel 4",
-            model: "flame",
+            name: "Xiaomi 12",
+            model: "cupid",
         },
         {
-            name: "Pixel 4 XL",
-            model: "coral",
+            name: "Xiaomi 12S",
+            model: "mayfly",
         },
         {
-            name: "Pixel 4a 5G",
-            model: "bramble",
+            name: "Xiaomi 12 Pro",
+            model: "zeus",
         },
         {
-            name: "Pixel 5",
-            model: "redfin",
-        },
-        {
-            name: "Pixel 6",
-            model: "oriole",
-        },
-        {
-            name: "Pixel 6 Pro",
-            model: "raven",
+            name: "Xiaomi 12S Pro",
+            model: "unicorn",
         },
     ],
     RELEASE_VARIANTS: {
