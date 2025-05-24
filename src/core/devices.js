@@ -1,19 +1,8 @@
 const DEVICE_NAMES = {
-    sailfish: "Pixel",
-    marlin: "Pixel XL",
-    walleye: "Pixel 2",
-    taimen: "Pixel 2 XL",
-    blueline: "Pixel 3",
-    crosshatch: "Pixel 3 XL",
-    sargo: "Pixel 3a",
-    bonito: "Pixel 3a XL",
-    flame: "Pixel 4",
-    coral: "Pixel 4 XL",
-    sunfish: "Pixel 4a",
-    bramble: "Pixel 4a 5G",
-    redfin: "Pixel 5",
-    oriole: "Pixel 6",
-    raven: "Pixel 6 Pro",
+    cupid: "Xiaomi 12",
+    mayfly: "Xiaomi 12S",
+    zeus: "Xiaomi 12 Pro",
+    unicorn: "Xiaomi 12S Pro",
 };
 
 export function getDeviceName(device) {
