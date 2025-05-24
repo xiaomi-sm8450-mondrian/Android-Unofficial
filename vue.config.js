@@ -2,7 +2,7 @@ module.exports = {
     publicPath:
         process.env.NODE_ENV === "production"
             ? process.env.VUE_APP_PROD_URL
-            : "/Android-Unofficial/",
+            : "/",
     transpileDependencies: ["vuetify"],
     chainWebpack: (config) => {
         config.plugin("html").tap((args) => {
