@@ -3,6 +3,7 @@ const DEVICE_NAMES = {
     mayfly: "Xiaomi 12S",
     zeus: "Xiaomi 12 Pro",
     unicorn: "Xiaomi 12S Pro",
+    diting: "Xiaomi 12T Pro",
 };
 
 export function getDeviceName(device) {
