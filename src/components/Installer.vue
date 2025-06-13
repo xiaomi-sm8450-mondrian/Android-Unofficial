@@ -82,7 +82,7 @@
                     <download-step
                         :device="device"
                         :blob-store="blobStore"
-                        :active="curStep === 3"
+                        :active="curStep === 2"
                     />
                 </v-stepper-content>
 
