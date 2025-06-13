@@ -22,19 +22,15 @@
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="curStep > 2" step="2">
-                    Unlock
-                </v-stepper-step>
-
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="curStep > 3" step="3">
+                <v-stepper-step :complete="curStep > 2" step="2">
                     Download
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
-                <v-stepper-step :complete="curStep > 4" step="4">
+                <v-stepper-step :complete="curStep > 3" step="3">
                     Install
                 </v-stepper-step>
             </v-stepper-header>
@@ -85,11 +81,10 @@
                         curStep === 2 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <unlock-step
+                    <download-step
                         :device="device"
                         :blob-store="blobStore"
-                        :curStep="curStep"
-                        stepNum="2"
+                        :active="curStep === 3"
                     />
                 </v-stepper-content>
 
@@ -99,7 +94,7 @@
                         curStep === 3 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <download-step
+                    <install-step
                         :device="device"
                         :blob-store="blobStore"
                         :active="curStep === 3"
@@ -109,26 +104,13 @@
                 <v-stepper-content
                     step="4"
                     :class="
-                        curStep === 4 ? 'd-flex flex-column flex-grow-1' : null
-                    "
-                >
-                    <install-step
-                        :device="device"
-                        :blob-store="blobStore"
-                        :active="curStep === 4"
-                    />
-                </v-stepper-content>
-
-                <v-stepper-content
-                    step="5"
-                    :class="
-                        curStep === 5 ? 'd-flex flex-column flex-grow-1' : null
+                        curStep === 4? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
                     <finish-step
                         :device="device"
                         :blob-store="blobStore"
-                        :active="curStep === 5"
+                        :active="curStep === 4"
                     />
                 </v-stepper-content>
             </v-stepper-items>
@@ -443,7 +425,6 @@ import ConnectBanner from "./ConnectBanner";
 import PrepareStep from "./PrepareStep";
 import InstallTypeStep from "./InstallTypeStep";
 import ConnectStep from "./ConnectStep";
-import UnlockStep from "./UnlockStep";
 import DownloadStep from "./DownloadStep";
 import InstallStep from "./InstallStep";
 import FinishStep from "./FinishStep";
@@ -460,7 +441,6 @@ export default {
         PrepareStep,
         InstallTypeStep,
         ConnectStep,
-        UnlockStep,
         DownloadStep,
         InstallStep,
         FinishStep,
