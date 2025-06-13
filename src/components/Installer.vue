@@ -22,8 +22,6 @@
 
                 <v-divider></v-divider>
 
-                <v-divider></v-divider>
-
                 <v-stepper-step :complete="curStep > 2" step="2">
                     Download
                 </v-stepper-step>
