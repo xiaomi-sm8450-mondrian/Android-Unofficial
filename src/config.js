@@ -24,8 +24,8 @@ export default {
         },
     ],
     RELEASE_VARIANTS: {
-        core: {
-            description: "Minimal version Core Google apps and services.",
+        GAPPS: {
+            description: "Normal Google apps and services.",
             suffix: "",
         },
     },
