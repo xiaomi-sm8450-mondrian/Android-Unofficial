@@ -51,13 +51,13 @@
                             >
                                 {{ feature }}
                             </v-chip>
-                        </v-card-text>
-
-                        <v-card-actions class="justify-center pa-4">
+                        </v-card-text>                        <v-card-actions class="justify-center pa-4">
                             <v-btn
                                 :color="selectedRom === rom.id ? 'white' : 'primary'"
                                 :text="selectedRom !== rom.id"
                                 :outlined="selectedRom !== rom.id"
+                                :dark="selectedRom !== rom.id"
+                                :class="{ 'primary--text': selectedRom === rom.id }"
                                 @click.stop="selectRom(rom.id)"
                             >
                                 {{ selectedRom === rom.id ? 'Selected' : 'Select' }}
