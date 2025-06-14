@@ -51,13 +51,22 @@
                             >
                                 {{ feature }}
                             </v-chip>
+<<<<<<< HEAD
                         </v-card-text>                        <v-card-actions class="justify-center pa-4">
+=======
+                        </v-card-text>
+
+                        <v-card-actions class="justify-center pa-4">
+>>>>>>> 351ea0708cb75afcb0934ed70c43675a121c996a
                             <v-btn
                                 :color="selectedRom === rom.id ? 'white' : 'primary'"
                                 :text="selectedRom !== rom.id"
                                 :outlined="selectedRom !== rom.id"
+<<<<<<< HEAD
                                 :dark="selectedRom !== rom.id"
                                 :class="{ 'primary--text': selectedRom === rom.id }"
+=======
+>>>>>>> 351ea0708cb75afcb0934ed70c43675a121c996a
                                 @click.stop="selectRom(rom.id)"
                             >
                                 {{ selectedRom === rom.id ? 'Selected' : 'Select' }}
