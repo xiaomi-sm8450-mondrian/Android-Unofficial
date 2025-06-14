@@ -5,7 +5,7 @@
 
             <div class="text-body-1">
                 <p>
-                    This is an easy way to install
+                    This is an easy way to install <strong>Fastboot Roms</strong>
                     {{ $root.$data.OS_NAME }} on your device. You’ll need an
                     <strong>unlocked</strong> model of one of the supported
                     devices:
