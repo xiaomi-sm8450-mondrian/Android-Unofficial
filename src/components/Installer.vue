@@ -17,18 +17,24 @@
         >
             <v-stepper-header class="mb-3">
                 <v-stepper-step :complete="curStep > 1" step="1">
-                    Connect
+                    ROM Selection
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
                 <v-stepper-step :complete="curStep > 2" step="2">
-                    Download
+                    Connect
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
                 <v-stepper-step :complete="curStep > 3" step="3">
+                    Download
+                </v-stepper-step>
+
+                <v-divider></v-divider>
+
+                <v-stepper-step :complete="curStep > 4" step="4">
                     Install
                 </v-stepper-step>
             </v-stepper-header>
@@ -66,10 +72,14 @@
                         curStep === 1 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <connect-step
+                    <rom-selection-step
                         :device="device"
                         :blob-store="blobStore"
                         :active="curStep === 1"
+                        @romSelected="handleRomSelection"
+                        @romConfigured="handleRomConfiguration"
+                        @prevStep="curStep -= 1"
+                        @nextStep="curStep += 1"
                     />
                 </v-stepper-content>
 
@@ -79,7 +89,7 @@
                         curStep === 2 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <download-step
+                    <connect-step
                         :device="device"
                         :blob-store="blobStore"
                         :active="curStep === 2"
@@ -92,7 +102,7 @@
                         curStep === 3 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <install-step
+                    <download-step
                         :device="device"
                         :blob-store="blobStore"
                         :active="curStep === 3"
@@ -102,13 +112,26 @@
                 <v-stepper-content
                     step="4"
                     :class="
-                        curStep === 4? 'd-flex flex-column flex-grow-1' : null
+                        curStep === 4 ? 'd-flex flex-column flex-grow-1' : null
+                    "
+                >
+                    <install-step
+                        :device="device"
+                        :blob-store="blobStore"
+                        :active="curStep === 4"
+                    />
+                </v-stepper-content>
+
+                <v-stepper-content
+                    step="5"
+                    :class="
+                        curStep === 5? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
                     <finish-step
                         :device="device"
                         :blob-store="blobStore"
-                        :active="curStep === 4"
+                        :active="curStep === 5"
                     />
                 </v-stepper-content>
             </v-stepper-items>
@@ -422,6 +445,7 @@ import { BlobStore } from "../core/download";
 import ConnectBanner from "./ConnectBanner";
 import PrepareStep from "./PrepareStep";
 import InstallTypeStep from "./InstallTypeStep";
+import RomSelectionStep from "./RomSelectionStep";
 import ConnectStep from "./ConnectStep";
 import DownloadStep from "./DownloadStep";
 import InstallStep from "./InstallStep";
@@ -438,6 +462,7 @@ export default {
     components: {
         PrepareStep,
         InstallTypeStep,
+        RomSelectionStep,
         ConnectStep,
         DownloadStep,
         InstallStep,
@@ -450,6 +475,7 @@ export default {
         blobStore: blobStore,
         curStep: -1,
         userAgent: navigator.userAgent,
+        selectedRom: null,
 
         connectSelectDialog: false,
         connectUdevDialog: false,
@@ -468,6 +494,47 @@ export default {
     }),
 
     methods: {
+        handleRomSelection(romId) {
+            this.selectedRom = romId;
+            console.log('ROM selected:', romId);
+        },
+
+        handleRomConfiguration(romData) {
+            this.selectedRom = romData.id;
+            // Update the blob store or device configuration based on ROM
+            this.configureRomSettings(romData);
+            console.log('ROM configured:', romData);
+        },
+
+        configureRomSettings(romData) {
+            // Configure download URLs and settings based on selected ROM
+            switch (romData.id) {
+                case 'rising':
+                    this.blobStore.romConfig = {
+                        name: 'RisingOS',
+                        downloadUrl: 'https://example.com/rising/',
+                        features: romData.features
+                    };
+                    break;
+                case 'axion':
+                    this.blobStore.romConfig = {
+                        name: 'Axion AOSP',
+                        downloadUrl: 'https://example.com/axion/',
+                        features: romData.features
+                    };
+                    break;
+                case 'hyperos':
+                    this.blobStore.romConfig = {
+                        name: 'Xiaomi HyperOS 2',
+                        downloadUrl: 'https://example.com/hyperos/',
+                        features: romData.features
+                    };
+                    break;
+                default:
+                    console.warn('Unknown ROM selected:', romData.id);
+            }
+        },
+
         handleSelfError(error, retryCallback) {
             this.$refs.stepper.$emit(error, retryCallback);
         },
