@@ -3,24 +3,8 @@ export default {
     ACCENT_COLOR: "#0366d6",
     SUPPORTED_DEVICES: [
         {
-            name: "Xiaomi 12",
-            model: "cupid",
-        },
-        {
-            name: "Xiaomi 12S",
-            model: "mayfly",
-        },
-        {
-            name: "Xiaomi 12 Pro",
-            model: "zeus",
-        },
-        {
-            name: "Xiaomi 12S Pro",
-            model: "unicorn",
-        },
-        {
-            name: "Xiaomi 12T Pro",
-            model: "diting",
+            name: "Poco F5 Pro / Redmi K60",
+            model: "mondrian",
         },
     ],
     AVAILABLE_ROMS: {
