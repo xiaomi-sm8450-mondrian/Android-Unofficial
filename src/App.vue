@@ -1,6 +1,20 @@
 <template>
     <v-app id="inspire">
-        <v-main class="grey lighten-3">
+        <!-- Dark Mode Toggle -->
+        <v-btn
+            fab
+            small
+            fixed
+            top
+            right
+            class="ma-4"
+            @click="toggleDarkMode"
+            :color="$vuetify.theme.dark ? 'yellow' : 'primary'"
+        >
+            <v-icon>{{ $vuetify.theme.dark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+        </v-btn>
+
+        <v-main :class="$vuetify.theme.dark ? '' : 'grey lighten-3'">
             <v-container fill-height>
                 <v-row align="center" justify="center">
                     <v-col cols="12" sm="2"></v-col>
@@ -118,5 +132,21 @@ export default {
     data: () => ({
         links: ["Home", "Install"],
     }),
+
+    methods: {
+        toggleDarkMode() {
+            this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+            // Save the preference to localStorage
+            localStorage.setItem('darkMode', this.$vuetify.theme.dark.toString());
+        },
+    },
+
+    mounted() {
+        // Apply saved dark mode preference
+        const savedDarkMode = localStorage.getItem('darkMode');
+        if (savedDarkMode !== null) {
+            this.$vuetify.theme.dark = savedDarkMode === 'true';
+        }
+    },
 };
 </script>
