@@ -151,7 +151,7 @@ export default {
 
                 if (this.releaseIndex === undefined) {
                     try {
-                        let indexResp = await fetch("https://raw.githubusercontent.com/dopaemon/Android-Unofficial/refs/heads/master/release.json");
+                        let indexResp = await fetch("https://raw.githubusercontent.com/keosh1/Android-Unofficial/refs/heads/master/release.json");
                         this.releaseIndex = await indexResp.json();
                     } catch (error) {
                         console.error("Failed to fetch release index:", error);
