@@ -55,26 +55,25 @@
                         </v-card-text>
                     </v-card>
                 </v-col>
-            </v-row>
-
-            <!-- Variant Details -->
+            </v-row>            <!-- Variant Details -->
             <v-expand-transition>
                 <v-card
                     v-if="selectedVariant"
                     class="mt-4 pa-4"
                     outlined
-                    color="grey lighten-5"
+                    :color="$vuetify.theme.dark ? 'grey darken-3' : 'grey lighten-4'"
                 >
                     <v-card-text>
                         <div class="d-flex align-center mb-2">
-                            <v-icon color="info" class="mr-2">mdi-information</v-icon>
+                            <v-icon :color="$vuetify.theme.dark ? 'blue lighten-2' : 'primary'" class="mr-2">mdi-information</v-icon>
                             <span class="font-weight-medium">About {{ getSelectedVariantName() }}</span>
                         </div>
                         <p class="mb-2">{{ getSelectedVariantDetails() }}</p>
                         <div class="d-flex flex-wrap">
                             <v-chip
                                 small
-                                color="info"
+                                :color="$vuetify.theme.dark ? 'blue darken-1' : 'primary'"
+                                :text-color="$vuetify.theme.dark ? 'white' : 'white'"
                                 class="mr-2 mb-1"
                                 v-for="detail in getSelectedVariantSpecs()"
                                 :key="detail"
