@@ -20,9 +20,10 @@
                 ripple
                 :color="
                     $root.$data.installType === 'clean'
-                        ? 'grey lighten-4'
+                        ? 'primary'
                         : null
                 "
+                :dark="$root.$data.installType === 'clean'"
                 :class="
                     $root.$data.installType === 'clean'
                         ? 'v-card--selected'
@@ -31,7 +32,9 @@
                 @click="setType('clean')"
             >
                 <v-card-title class="mt-n2">
-                    <v-icon class="pr-2 py-2" color="rgba(0, 0, 0, 0.87)"
+                    <v-icon 
+                        class="pr-2 py-2" 
+                        :color="$root.$data.installType === 'clean' ? 'white' : 'rgba(0, 0, 0, 0.87)'"
                         >mdi-cellphone-erase</v-icon
                     >
                     Clean install</v-card-title
@@ -52,9 +55,10 @@
                 ripple
                 :color="
                     $root.$data.installType === 'update'
-                        ? 'grey lighten-4'
+                        ? 'primary'
                         : null
                 "
+                :dark="$root.$data.installType === 'update'"
                 :class="
                     $root.$data.installType === 'update'
                         ? 'v-card--selected'
@@ -64,7 +68,9 @@
             >
                 <div>
                     <v-card-title class="mt-n2">
-                        <v-icon class="pr-2 py-2" color="rgba(0, 0, 0, 0.87)"
+                        <v-icon 
+                            class="pr-2 py-2" 
+                            :color="$root.$data.installType === 'update' ? 'white' : 'rgba(0, 0, 0, 0.87)'"
                             >mdi-update</v-icon
                         >
                         Update</v-card-title
@@ -96,6 +102,14 @@
 
 .theme--light.v-sheet--outlined.v-card--selected {
     border: 2px solid rgba(0, 0, 0, 0.77) !important;
+}
+
+.theme--dark.v-sheet--outlined {
+    border-width: 2px;
+}
+
+.theme--dark.v-sheet--outlined.v-card--selected {
+    border: 2px solid rgba(255, 255, 255, 0.77) !important;
 }
 </style>
 
