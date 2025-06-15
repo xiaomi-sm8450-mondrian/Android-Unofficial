@@ -161,7 +161,27 @@ export default {
                 }
 
                 if (this.releaseIndex && this.releaseIndex.latest && this.$root.$data.product) {
-                    this.latestReleases = this.releaseIndex.latest[this.$root.$data.product];
+                    let releases = this.releaseIndex.latest[this.$root.$data.product];
+                    
+                    // Filter releases based on selected ROM and variant
+                    const selectedRom = localStorage.getItem('selectedRom');
+                    const selectedVariant = localStorage.getItem('selectedVariant');
+                    
+                    if (selectedRom && selectedVariant && releases) {
+                        try {
+                            const romData = JSON.parse(selectedRom);
+                            const variantData = JSON.parse(selectedVariant);
+                            
+                            // Filter releases to match selected ROM and variant
+                            releases = releases.filter(release => {
+                                return release.rom === romData.id && release.variant === variantData.id;
+                            });
+                        } catch (e) {
+                            console.warn('Failed to parse ROM/variant selection for filtering');
+                        }
+                    }
+                    
+                    this.latestReleases = releases;
                 } else {
                     this.latestReleases = undefined;
                 }

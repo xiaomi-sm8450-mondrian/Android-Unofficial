@@ -23,18 +23,24 @@
                 <v-divider></v-divider>
 
                 <v-stepper-step :complete="curStep > 2" step="2">
-                    Connect
+                    Variant
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
                 <v-stepper-step :complete="curStep > 3" step="3">
-                    Download
+                    Connect
                 </v-stepper-step>
 
                 <v-divider></v-divider>
 
                 <v-stepper-step :complete="curStep > 4" step="4">
+                    Download
+                </v-stepper-step>
+
+                <v-divider></v-divider>
+
+                <v-stepper-step :complete="curStep > 5" step="5">
                     Install
                 </v-stepper-step>
             </v-stepper-header>
@@ -89,10 +95,15 @@
                         curStep === 2 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <connect-step
+                    <variant-selection-step
                         :device="device"
                         :blob-store="blobStore"
+                        :selected-rom="selectedRom"
                         :active="curStep === 2"
+                        @variantSelected="handleVariantSelection"
+                        @variantConfigured="handleVariantConfiguration"
+                        @prevStep="curStep -= 1"
+                        @nextStep="curStep += 1"
                     />
                 </v-stepper-content>
 
@@ -102,7 +113,7 @@
                         curStep === 3 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <download-step
+                    <connect-step
                         :device="device"
                         :blob-store="blobStore"
                         :active="curStep === 3"
@@ -115,7 +126,7 @@
                         curStep === 4 ? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
-                    <install-step
+                    <download-step
                         :device="device"
                         :blob-store="blobStore"
                         :active="curStep === 4"
@@ -125,13 +136,26 @@
                 <v-stepper-content
                     step="5"
                     :class="
-                        curStep === 5? 'd-flex flex-column flex-grow-1' : null
+                        curStep === 5 ? 'd-flex flex-column flex-grow-1' : null
+                    "
+                >
+                    <install-step
+                        :device="device"
+                        :blob-store="blobStore"
+                        :active="curStep === 5"
+                    />
+                </v-stepper-content>
+
+                <v-stepper-content
+                    step="6"
+                    :class="
+                        curStep === 6? 'd-flex flex-column flex-grow-1' : null
                     "
                 >
                     <finish-step
                         :device="device"
                         :blob-store="blobStore"
-                        :active="curStep === 5"
+                        :active="curStep === 6"
                     />
                 </v-stepper-content>
             </v-stepper-items>
@@ -446,6 +470,7 @@ import ConnectBanner from "./ConnectBanner";
 import PrepareStep from "./PrepareStep";
 import InstallTypeStep from "./InstallTypeStep";
 import RomSelectionStep from "./RomSelectionStep";
+import VariantSelectionStep from "./VariantSelectionStep";
 import ConnectStep from "./ConnectStep";
 import DownloadStep from "./DownloadStep";
 import InstallStep from "./InstallStep";
@@ -463,6 +488,7 @@ export default {
         PrepareStep,
         InstallTypeStep,
         RomSelectionStep,
+        VariantSelectionStep,
         ConnectStep,
         DownloadStep,
         InstallStep,
@@ -476,6 +502,7 @@ export default {
         curStep: -1,
         userAgent: navigator.userAgent,
         selectedRom: null,
+        selectedVariant: null,
 
         connectSelectDialog: false,
         connectUdevDialog: false,
@@ -533,6 +560,21 @@ export default {
                 default:
                     console.warn('Unknown ROM selected:', romData.id);
             }
+        },
+
+        handleVariantSelection(variantId) {
+            this.selectedVariant = variantId;
+            console.log('Variant selected:', variantId);
+        },
+
+        handleVariantConfiguration(variantConfig) {
+            this.selectedVariant = variantConfig.variant;
+            // Store variant configuration in blob store
+            if (this.blobStore.romConfig) {
+                this.blobStore.romConfig.variant = variantConfig.variant;
+                this.blobStore.romConfig.variantData = variantConfig.variantData;
+            }
+            console.log('Variant configured:', variantConfig);
         },
 
         handleSelfError(error, retryCallback) {
