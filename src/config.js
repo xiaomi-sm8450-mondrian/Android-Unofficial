@@ -41,12 +41,12 @@ export default {
     },
     DONATION_LINKS: [
         {
-            title: "One-time donation",
+            title: "Buy Me a Coffee",
             description:
-                "You can also make a one-time donation through PayPal. It doesn’t help with sustainable support, but every little bit is appreciated!",
-            highlight: false,
-            url: "https://paypal.me/dopaemon",
-            icon: "paypal",
+                "Support the development by buying me a coffee. Every contribution helps keep this project going!",
+            highlight: true,
+            url: "https://buymeacoffee.com/keosh",
+            icon: "buymeacoffee",
         },
     ],
 };

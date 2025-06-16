@@ -28,11 +28,11 @@
                 target="_blank"
                 :class="donation.highlight ? 'v-card--p-highlight' : null"
             >
-                <v-card-title>
-                    <div class="pr-2">
+                <v-card-title>                    <div class="pr-2">
                         <liberapay-icon v-if="donation.icon === 'liberapay'" />
                         <paypal-icon v-if="donation.icon === 'paypal'" />
                         <patreon-icon v-if="donation.icon === 'patreon'" />
+                        <buy-me-a-coffee-icon v-if="donation.icon === 'buymeacoffee'" />
                     </div>
                     {{ donation.title }}</v-card-title
                 >
@@ -60,10 +60,11 @@
 import LiberapayIcon from "./icons/LiberapayIcon.vue";
 import PaypalIcon from "./icons/PaypalIcon.vue";
 import PatreonIcon from "./icons/PatreonIcon.vue";
+import BuyMeACoffeeIcon from "./icons/BuyMeACoffeeIcon.vue";
 import { getDeviceName } from "../core/devices";
 
 export default {
-    components: { LiberapayIcon, PaypalIcon, PatreonIcon },
+    components: { LiberapayIcon, PaypalIcon, PatreonIcon, BuyMeACoffeeIcon },
     name: "FinishStep",
 
     props: ["device", "blobStore", "active"],
