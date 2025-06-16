@@ -1,20 +1,41 @@
 <template>
     <v-container class="d-flex justify-space-between flex-column flex-grow-1">
-        <div class="mt-n4 flex-grow-1" v-if="$root.$data.release !== null">
+        <div class="mt-n4 flex-grow-1" v-if="$root.$data.release !== null || isLocalFile">
             <h6 class="text-h6 pb-4">Install {{ $root.$data.OS_NAME }}</h6>
 
             <div class="text-body-1">
-                <p>
-                    This will install
-                    {{ $root.$data.release.version
-                    }}{{
-                        $root.$data.RELEASE_VARIANTS[
-                            $root.$data.release.variant
-                        ].suffix
-                    }}
-                    on your
-                    {{ getDeviceName($root.$data.product) }}.
-                </p>
+                <!-- Local file installation -->
+                <div v-if="isLocalFile">
+                    <p>
+                        This will install your local ROM file
+                        <strong>{{ localFileInfo.name }}</strong>
+                        ({{ formatFileSize(localFileInfo.size) }})
+                        on your {{ getDeviceName($root.$data.product) }}.
+                    </p>
+                    <v-alert
+                        type="info"
+                        outlined
+                        dense
+                        class="my-3"
+                    >
+                        <v-icon small class="mr-2">mdi-information</v-icon>
+                        Installing from local file. Make sure this is a compatible ROM for your device.
+                    </v-alert>
+                </div>
+                <!-- Downloaded file installation -->
+                <div v-else>
+                    <p>
+                        This will install
+                        {{ $root.$data.release.version
+                        }}{{
+                            $root.$data.RELEASE_VARIANTS[
+                                $root.$data.release.variant
+                            ].suffix
+                        }}
+                        on your
+                        {{ getDeviceName($root.$data.product) }}.
+                    </p>
+                </div>
                 <p v-if="$root.$data.installType === 'clean'">
                     Because you’re doing a clean install to switch from another
                     OS,
@@ -146,6 +167,21 @@ export default {
         memoryDialog: false,
     }),
 
+    computed: {
+        isLocalFile() {
+            return this.blobStore && this.blobStore.get && this.blobStore.get('localRomFile') !== null;
+        },
+        localFileInfo() {
+            if (!this.isLocalFile) return null;
+            try {
+                const savedFileInfo = localStorage.getItem('selectedLocalFile');
+                return savedFileInfo ? JSON.parse(savedFileInfo) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+    },
+
     watch: {
         active: async function (newState) {
             if (newState) {
@@ -156,6 +192,14 @@ export default {
 
     methods: {
         getDeviceName,
+
+        formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        },
 
         reconnectCallback() {
             this.$bubble("requestDeviceReconnect");
@@ -182,7 +226,20 @@ export default {
                 this.saEvent(
                     `install_build__${this.$root.$data.product}_${this.$root.$data.release.version}_${this.$root.$data.release.variant}`
                 );
-                let blob = this.$root.$data.zipBlob;
+                
+                // Check for local file first, then fall back to downloaded file
+                let blob = null;
+                if (this.blobStore && this.blobStore.get) {
+                    blob = this.blobStore.get('localRomFile');
+                }
+                if (!blob) {
+                    blob = this.$root.$data.zipBlob;
+                }
+                
+                if (!blob) {
+                    throw new Error('No ROM file available for installation');
+                }
+                
                 await this.device.flashFactoryZip(
                     blob,
                     this.$root.$data.installType === "clean",

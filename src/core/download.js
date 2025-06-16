@@ -35,6 +35,7 @@ function fetchBlobWithProgress(url, onProgress) {
 export class BlobStore {
     constructor() {
         this.db = null;
+        this.memoryStore = new Map(); // Temporary storage for immediate access
     }
 
     async _wrapReq(request, onUpgrade = null) {
@@ -106,5 +107,33 @@ export class BlobStore {
         }
 
         return blob;
+    }
+
+    // Add convenience methods for storing and getting blobs
+    async store(key, blob) {
+        this.memoryStore.set(key, blob);
+        if (this.db) {
+            await this.saveFile(key, blob);
+        }
+    }
+
+    get(key) {
+        return this.memoryStore.get(key) || null;
+    }
+
+    async getAsync(key) {
+        // First check memory store
+        if (this.memoryStore.has(key)) {
+            return this.memoryStore.get(key);
+        }
+        // Then check IndexedDB
+        if (this.db) {
+            const blob = await this.loadFile(key);
+            if (blob) {
+                this.memoryStore.set(key, blob);
+                return blob;
+            }
+        }
+        return null;
     }
 }

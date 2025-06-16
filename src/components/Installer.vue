@@ -102,6 +102,7 @@
                         :active="curStep === 2"
                         @variantSelected="handleVariantSelection"
                         @variantConfigured="handleVariantConfiguration"
+                        @skipToInstall="handleSkipToInstall"
                         @prevStep="curStep -= 1"
                         @nextStep="curStep += 1"
                     />
@@ -573,8 +574,22 @@ export default {
             if (this.blobStore.romConfig) {
                 this.blobStore.romConfig.variant = variantConfig.variant;
                 this.blobStore.romConfig.variantData = variantConfig.variantData;
+                this.blobStore.romConfig.installationMethod = variantConfig.installationMethod;
+                this.blobStore.romConfig.localFile = variantConfig.localFile;
             }
+            
+            // If using local file installation, skip download step
+            if (variantConfig.installationMethod === 'local' && variantConfig.localFile) {
+                // Skip to step 4 (connect step) or step 5 (install step) depending on device state
+                this.curStep = this.device && this.device.isConnected ? 5 : 3;
+            }
+            
             console.log('Variant configured:', variantConfig);
+        },
+
+        handleSkipToInstall() {
+            // Skip directly to connect step if device not connected, or install step if connected
+            this.curStep = this.device && this.device.isConnected ? 5 : 3;
         },
 
         handleSelfError(error, retryCallback) {

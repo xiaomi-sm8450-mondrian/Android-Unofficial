@@ -84,6 +84,94 @@
                     </v-card-text>
                 </v-card>
             </v-expand-transition>
+
+            <!-- Installation Method Selection -->
+            <v-expand-transition>
+                <v-card
+                    v-if="selectedVariant"
+                    class="mt-4 pa-4"
+                    outlined
+                    :color="$vuetify.theme.dark ? 'grey darken-2' : 'grey lighten-5'"
+                >
+                    <v-card-text>
+                        <div class="d-flex align-center mb-3">
+                            <v-icon :color="$vuetify.theme.dark ? 'green lighten-2' : 'success'" class="mr-2">mdi-download-box</v-icon>
+                            <span class="font-weight-medium">Installation Method</span>
+                        </div>
+                        <p class="mb-3 text-body-2">Choose how you want to install this ROM:</p>
+                        
+                        <v-radio-group v-model="installationMethod" class="mt-0">
+                            <v-radio
+                                label="Download from server"
+                                value="download"
+                                color="primary"
+                            >
+                                <template v-slot:label>
+                                    <div class="d-flex align-center">
+                                        <v-icon small class="mr-2">mdi-cloud-download</v-icon>
+                                        <span>Download from server</span>
+                                    </div>
+                                </template>
+                            </v-radio>
+                            <v-radio
+                                label="Browse local file"
+                                value="local"
+                                color="primary"
+                            >
+                                <template v-slot:label>
+                                    <div class="d-flex align-center">
+                                        <v-icon small class="mr-2">mdi-folder-open</v-icon>
+                                        <span>Browse local file</span>
+                                    </div>
+                                </template>
+                            </v-radio>
+                        </v-radio-group>
+
+                        <!-- Local File Selection -->
+                        <v-expand-transition>
+                            <div v-if="installationMethod === 'local'" class="mt-3">
+                                <v-file-input
+                                    v-model="selectedFile"
+                                    label="Select ROM ZIP file"
+                                    accept=".zip"
+                                    prepend-icon="mdi-file-zip-box"
+                                    show-size
+                                    color="primary"
+                                    outlined
+                                    dense
+                                    @change="onFileSelected"
+                                >
+                                    <template v-slot:selection="{ text }">
+                                        <v-chip
+                                            color="primary"
+                                            dark
+                                            label
+                                            small
+                                        >
+                                            {{ text }}
+                                        </v-chip>
+                                    </template>
+                                </v-file-input>
+                                
+                                <v-alert
+                                    v-if="selectedFile"
+                                    type="info"
+                                    outlined
+                                    dense
+                                    class="mt-2"
+                                >
+                                    <div class="d-flex align-center">
+                                        <v-icon small class="mr-2">mdi-information</v-icon>
+                                        <span class="text-body-2">
+                                            Selected: {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})
+                                        </span>
+                                    </div>
+                                </v-alert>
+                            </div>
+                        </v-expand-transition>
+                    </v-card-text>
+                </v-card>
+            </v-expand-transition>
         </div>
 
         <!-- Navigation Buttons -->
@@ -98,13 +186,12 @@
             </v-btn>
             
             <v-spacer></v-spacer>
-            
-            <v-btn
+              <v-btn
                 color="primary"
-                :disabled="!selectedVariant"
+                :disabled="!canContinue"
                 @click="continueToNext"
             >
-                Continue
+                {{ installationMethod === 'local' ? 'Install from Local File' : 'Continue to Download' }}
                 <v-icon right>mdi-arrow-right</v-icon>
             </v-btn>
         </v-card-actions>
@@ -131,10 +218,11 @@ export default {
             type: String,
             default: null,
         },
-    },
-    data() {
+    },    data() {
         return {
             selectedVariant: null,
+            installationMethod: 'download', // 'download' or 'local'
+            selectedFile: null,
         };
     },
     computed: {
@@ -209,10 +297,18 @@ export default {
                             details: 'This is the China version of HyperOS optimized for Chinese users with regional features and optimizations.',
                             specs: ['China Optimized', 'Regional Features', 'Local Services', 'Specialized']
                         }
-                    ];
-                default:
+                    ];                default:
                     return [];
             }
+        },
+        canContinue() {
+            if (!this.selectedVariant) {
+                return false;
+            }
+            if (this.installationMethod === 'local') {
+                return this.selectedFile !== null;
+            }
+            return true;
         }
     },
     methods: {
@@ -220,26 +316,67 @@ export default {
             this.selectedVariant = variantId;
             // Store the selected variant in the global state or emit to parent
             this.$emit('variantSelected', variantId);
-        },
-        continueToNext() {
+        },        continueToNext() {
             if (this.selectedVariant) {
                 // Store the selected variant configuration
                 this.storeVariantSelection();
-                this.$emit('nextStep');
+                
+                if (this.installationMethod === 'local' && this.selectedFile) {
+                    // Skip download step and go directly to install with local file
+                    this.handleLocalFile();
+                } else {
+                    // Continue to download step
+                    this.$emit('nextStep');
+                }
             }
-        },
-        storeVariantSelection() {
+        },        storeVariantSelection() {
             // Store the selected variant in localStorage or vuex store
             const selectedVariantData = this.availableVariants.find(variant => variant.id === this.selectedVariant);
             if (selectedVariantData) {
                 localStorage.setItem('selectedVariant', JSON.stringify(selectedVariantData));
+                // Store installation method and selected file info
+                localStorage.setItem('installationMethod', this.installationMethod);
+                if (this.installationMethod === 'local' && this.selectedFile) {
+                    localStorage.setItem('selectedLocalFile', JSON.stringify({
+                        name: this.selectedFile.name,
+                        size: this.selectedFile.size,
+                        type: this.selectedFile.type
+                    }));
+                }
                 // Also emit to parent component
                 this.$emit('variantConfigured', {
                     rom: this.selectedRom,
                     variant: this.selectedVariant,
-                    variantData: selectedVariantData
+                    variantData: selectedVariantData,
+                    installationMethod: this.installationMethod,
+                    localFile: this.selectedFile
                 });
             }
+        },        handleLocalFile() {
+            // Store the file in the blob store for later use
+            if (this.blobStore && this.selectedFile) {
+                try {
+                    this.blobStore.store('localRomFile', this.selectedFile);
+                    // Skip download step and go directly to connect step or install step
+                    this.$emit('skipToInstall');
+                } catch (error) {
+                    console.error('Failed to store local file in blob store:', error);
+                    // Fallback: just emit the event anyway, the install step will handle the error
+                    this.$emit('skipToInstall');
+                }
+            } else {
+                console.warn('BlobStore not available or no file selected');
+            }
+        },
+        onFileSelected(file) {
+            this.selectedFile = file;
+        },
+        formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         },
         getSelectedRomName() {
             switch (this.selectedRom) {
